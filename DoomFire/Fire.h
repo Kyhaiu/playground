@@ -2,9 +2,9 @@
 #define FIRE_H_INCLUDED
 #include <vector>
 #include <tuple>
-#include <stdlib.h>
-#include <time.h>
+#include <windows.h>
 #include <iostream>
+
 
 class Fire{
     private:

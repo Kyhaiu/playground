@@ -37,15 +37,12 @@ void Fire::setFireArea(int width, int height){
 }
 
 void Fire::createFireDataStructure(){
-    int w = getFireWidth();
-    int h = getFireHeight();
+    int numberOfPixels = getFireArea();
     std::tuple<int, char> valuesInitialFire;
     std::get<0>(valuesInitialFire) = 0;
     std::get<1>(valuesInitialFire) = '*';
-    for(int i = 0; i < w; i++){
-        for(int j = 0; j < h; j++){
+    for(int i = 0; i < numberOfPixels; i++){
             fireArray.push_back(valuesInitialFire);
-        }
     }
 }
 
@@ -60,9 +57,10 @@ void Fire::createFireSource(){
 void Fire::calculateFirePropagation(){
     int w = getFireWidth();
     int h = getFireHeight();
-    for(int column = w; column >= 0; column--){
-        for(int row = h; row >= 0; row--){
-            const int pixelIndex = column + (w * row);
+    int pixelIndex = 0;
+    for(int column = 0; column < w; column++){
+        for(int row = 0; row < h; row++){
+            pixelIndex = column + (w * row);
             updateFireIntensifyPerPixel(pixelIndex);
         }
     }
@@ -75,24 +73,42 @@ void Fire::updateFireIntensifyPerPixel(int curretPixelIndex){
         return;
     }
 
-    int cooling = rand()%6;
-    const int belowPixelFireIndex = std::get<0>(fireArray[belowPixelIndex]);
+    int cooling = rand()%5;
+
+    int belowPixelFireIndex = std::get<0>(fireArray[belowPixelIndex]);
     int newFireIntesity = belowPixelFireIndex - cooling;
-    if(newFireIntesity > 0 ){
+
+    if(newFireIntesity >= 0 ){
         std::get<0>(fireArray[curretPixelIndex - cooling]) = newFireIntesity;
     } else{
-        std::get<0>(fireArray[curretPixelIndex- cooling]) = 0;
+        std::get<0>(fireArray[curretPixelIndex - cooling]) = 0;
     }
 }
 
 void Fire::showFire(){
     int aux = 0;
-    for(int i = 0; i < getFireWidth(); i++){
-        for(int j = 0; j < getFireHeight(); j++){
+    int w = getFireWidth();
+    int h = getFireHeight();
+    for(int row = 0; row < w; row++){
+        for(int column = 0; column < h; column++){
+            aux = column + (w * row);
             if(std::get<0>(fireArray[aux]) != 0){
-                std::cout << std::get<1>(fireArray[aux]);
+                if(std::get<0>(fireArray[aux]) <= 36 && std::get<0>(fireArray[aux]) >= 34){
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15+15*16);
+                }else if(std::get<0>(fireArray[aux]) < 34 && std::get<0>(fireArray[aux]) >= 29){
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14+14*16);
+                }else if(std::get<0>(fireArray[aux]) < 29 && std::get<0>(fireArray[aux]) >= 20){
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6+6*16);
+                }else if(std::get<0>(fireArray[aux]) < 20 && std::get<0>(fireArray[aux]) >= 10){
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12+12*16);
+                }else if(std::get<0>(fireArray[aux]) < 10 && std::get<0>(fireArray[aux]) >= 1){
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4+4*16);
+                }
+                std::cout << std::get<1>(fireArray[aux]) << " ";
+            } else{
+                std::cout << "  ";
             }
-            aux++;
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),7+0*16);
         }
         std::cout << std::endl;
     }
